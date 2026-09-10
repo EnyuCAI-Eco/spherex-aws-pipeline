@@ -1,0 +1,27 @@
+[aws]
+bucket = "nasa-irsa-spherex"
+region = "us-east-1"
+unsigned = true
+
+[catalog]
+prefix = "qr2/level2/"
+database = "catalogs/spherex.sqlite3"
+export_csv = "catalogs/level2_catalog_current.csv"
+
+[selection]
+planning_period = "2025W17_4B"
+limit = 10
+strategy = "stratified"
+manifest = "catalogs/test10_manifest.csv"
+
+[download]
+root = "data"
+workers = 2
+max_attempts = 3
+backoff_seconds = 2.0
+verify_fits = true
+sha256 = true
+
+[logging]
+level = "INFO"
+file = "logs/spherex_pipeline.log"

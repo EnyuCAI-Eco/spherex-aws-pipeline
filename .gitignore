@@ -1,0 +1,18 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+
+# Runtime state and logs
+catalogs/*.sqlite3
+catalogs/*.sqlite3-shm
+catalogs/*.sqlite3-wal
+catalogs/level2_catalog_current.csv
+logs/
+
+# Downloaded products and temporary transfers
+data/**/*.fits
+data/**/*.fits.part
+
+# Keep directory placeholders if added later
+!data/**/.gitkeep

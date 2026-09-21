@@ -94,6 +94,23 @@ download workers, performs FITS validation, and computes SHA-256.
 
 Run these commands from the project root.
 
+### 0. Find every QR2 image covering one sky point
+
+IRSA's SIA v2 service already maintains image footprints and returns the AWS
+object location for each match. A position search therefore does not download
+any FITS data and does not require a full local catalog scan:
+
+```bash
+python -m spherex_pipeline search --ra 210.80225 --dec 54.34894
+```
+
+The coordinates are ICRS decimal degrees. The command prints matching S3 keys,
+detectors, per-file size estimates, and the estimated total transfer volume.
+It only searches; it does not create a manifest or download files.
+
+SIA v2 represents the target as a tiny 0.036-arcsec circle (roughly 1/170 of a
+SPHEREx pixel), which is effectively a single point for this first prototype.
+
 ### 1. Update catalog metadata
 
 Full configured QR2 Level 2 prefix:

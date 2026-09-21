@@ -15,6 +15,7 @@ from .downloader import (
     summarize_plan,
     verify_manifest_files,
 )
+from .irsa import query_spherex_point
 from .selection import read_manifest, select_objects, write_manifest
 
 
@@ -40,6 +41,18 @@ def _parser() -> argparse.ArgumentParser:
     select.add_argument("--strategy", choices=("stratified", "first"))
     select.add_argument("--manifest", type=Path, help="Override manifest path")
     select.add_argument("--overwrite", action="store_true", help="Replace an existing manifest")
+
+    search = commands.add_parser(
+        "search", help="Find SPHEREx images covering one sky position via IRSA"
+    )
+    search.add_argument("--ra", type=float, required=True, help="ICRS RA in degrees")
+    search.add_argument("--dec", type=float, required=True, help="ICRS Dec in degrees")
+    search.add_argument(
+        "--max-results",
+        type=int,
+        default=10000,
+        help="Maximum number of IRSA rows to return (default: 10000)",
+    )
 
     download = commands.add_parser("download", help="Download files from a saved manifest")
     download.add_argument("--manifest", type=Path, help="Override manifest path")
@@ -108,6 +121,31 @@ def run(args: argparse.Namespace, settings: Settings, database: Database) -> int
         output = _resolved_override(args.output, settings, settings.export_csv_path)
         count = database.export_current_csv(output, settings.bucket)
         print(f"Exported {count} current objects to {output}")
+        return 0
+
+    if args.command == "search":
+        matches = query_spherex_point(
+            args.ra,
+            args.dec,
+            max_records=args.max_results,
+        )
+        total = sum(match.estimated_size_bytes for match in matches)
+        print(
+            f"IRSA found {len(matches)} SPHEREx QR2 images covering "
+            f"RA={args.ra:.8f}, Dec={args.dec:.8f} (ICRS)."
+        )
+        for match in matches:
+            detector = f"D{match.detector}" if match.detector is not None else "D?"
+            print(
+                f"{detector:<3} {format_bytes(match.estimated_size_bytes):>10}  "
+                f"s3://{match.bucket}/{match.key}"
+            )
+        print(f"Estimated full-FITS volume: {format_bytes(total)}")
+        if len(matches) == args.max_results:
+            print(
+                "WARNING: result count reached --max-results; the IRSA response "
+                "may be truncated."
+            )
         return 0
 
     if args.command == "select":

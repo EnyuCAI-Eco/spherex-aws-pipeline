@@ -1,6 +1,6 @@
 # SPHEREx AWS Data Pipeline — Project Status
 
-Last updated: 2026-09-08
+Last updated: 2026-09-21
 
 ## Goal
 
@@ -95,9 +95,10 @@ SPHEREx_project/
 
 ## Next recommended development
 
-1. Run one full `qr2/level2/` metadata scan and measure catalog scale.
-2. Define operational selection policies beyond the fixed debug manifest.
-3. Add a scheduler only after several manual update cycles succeed.
-4. For HPC, place `data/` and possibly the database on suitable storage and add
+1. Validate IRSA single-point SIA queries on Gregory's target coordinates.
+2. Join returned AWS keys to the local catalog and create a saved manifest.
+3. Compare one IRSA footprint result with the WCS in its local FITS file.
+4. Add a scheduler only after several manual update cycles succeed.
+5. For HPC, place `data/` and possibly the database on suitable storage and add
    a Slurm wrapper. Keep one catalog writer unless migrating state to a server
    database.
